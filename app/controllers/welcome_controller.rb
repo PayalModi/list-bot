@@ -2,6 +2,7 @@ class WelcomeController < ApplicationController
   def homepage
   	puts "Reached homepage"
   	if request.post?
+  		puts params
   		information = request.raw_post
 		data_parsed = JSON.parse(information)
   		puts data_parsed
