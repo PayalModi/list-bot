@@ -7,7 +7,10 @@ class WelcomeController < ApplicationController
 	  	if data_parsed["object"] == 'page'
 	  		for entry in data_parsed["entry"] do
 	  			for event in entry["messaging"] do
-	  				puts event["message"]["text"]
+	  				senderID = event["sender"]["id"]
+	  				text = event["message"]["text"]
+	  				puts text
+	  				puts senderID
 	  			end
 	  		end
 	  	end
