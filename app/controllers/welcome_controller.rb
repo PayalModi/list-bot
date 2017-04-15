@@ -4,7 +4,13 @@ class WelcomeController < ApplicationController
   		information = request.raw_post
 		data_parsed = JSON.parse(information)
   		puts data_parsed
-  		puts data_parsed["entry"][0]["messaging"][0]["message"]["text"]
+	  	if data_parsed["object"] == 'page'
+	  		for entry in data_parsed["entry"] do
+	  			for event in entry["messaging"] do
+	  				puts event["message"]["text"]
+	  			end
+	  		end
+	  	end
   	else
   		if params["hub.mode"] == 'subscribe' and params["hub.verify_token"] == ENV["VERIFY_TOKEN"] and params["hub.challenge"]
 	  		render plain: params["hub.challenge"], status: 200
