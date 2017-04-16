@@ -6,7 +6,6 @@ class WelcomeController < ApplicationController
   def homepage
   	if request.post?
   		information = request.raw_post
-  		puts information
 		data_parsed = JSON.parse(information)
 	  	if data_parsed["object"] == 'page'
 	  		for entry in data_parsed["entry"] do
@@ -18,9 +17,9 @@ class WelcomeController < ApplicationController
 	  				response = {:recipient => {:id => senderID}, :message => {:text => messageText}}
 
 	  				http = Net::HTTP.new(uri.host, uri.port)
+	  				http.use_ssl = true
 	  				request = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
 	  				request.body = response.to_json
-	  				puts request.body
 	  				http.request(request)
 	  			end
 	  		end
