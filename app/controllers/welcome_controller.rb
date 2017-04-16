@@ -6,8 +6,8 @@ class WelcomeController < ApplicationController
   def homepage
   	if request.post?
   		information = request.raw_post
+  		puts information
 		data_parsed = JSON.parse(information)
-  		puts data_parsed
 	  	if data_parsed["object"] == 'page'
 	  		for entry in data_parsed["entry"] do
 	  			for event in entry["messaging"] do
@@ -17,7 +17,7 @@ class WelcomeController < ApplicationController
 	  				puts senderID
 
 	  				uri = URI.parse("https://graph.facebook.com/v2.6/me/messages?access_token="+ENV["PAGE_ACCESS_TOKEN"])
-	  				header = {'Content-Type': 'text/json'}
+	  				header = {'Content-Type': 'application/json'}
 	  				response = {recipient: {id: senderID}, message: {text: messageText}}
 
 	  				http = Net::HTTP.new(uri.host, uri.port)
