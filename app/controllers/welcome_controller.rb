@@ -14,7 +14,14 @@ class WelcomeController < ApplicationController
 	  				senderID = event["sender"]["id"]
 	  				messageText = event["message"]["text"]
 
-	  				Net::HTTP.post URI("https://graph.facebook.com/v2.6/me/messages?access_token="+ENV["PAGE_ACCESS_TOKEN"]), {:recipient => {:id => senderID}, :message => {:text => messageText}}.to_json, "Content-Type" => "application/json"
+	  				uri = URI.parse("https://graph.facebook.com/v2.6/me/messages?access_token="+ENV["PAGE_ACCESS_TOKEN"])
+	  				response = {:recipient => {:id => senderID}, :message => {:text => messageText}}
+
+	  				http = Net::HTTP.new(uri.host, uri.port)
+	  				request = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
+	  				request.body = response.to_json
+	  				puts request.body
+	  				http.request(request)
 	  			end
 	  		end
 	  	end
