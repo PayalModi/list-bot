@@ -17,11 +17,12 @@ class WelcomeController < ApplicationController
 	  				puts senderID
 
 	  				uri = URI.parse("https://graph.facebook.com/v2.6/me/messages?access_token="+ENV["PAGE_ACCESS_TOKEN"])
+	  				puts "https://graph.facebook.com/v2.6/me/messages?access_token="+ENV["PAGE_ACCESS_TOKEN"]
 	  				header = {'Content-Type': 'text/json'}
 	  				response = {recipient: {id: senderID}, message: {text: messageText}}
 
 	  				http = Net::HTTP.new(uri.host, uri.port)
-	  				request = NET::HTTP::Post.new(uri.request_uri, header)
+	  				request = Net::HTTP::Post.new(uri.request_uri, header)
 	  				request.body = response.to_json
 	  				http.request(request)
 	  			end
