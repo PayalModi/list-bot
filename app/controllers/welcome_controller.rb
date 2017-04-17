@@ -19,11 +19,12 @@ class WelcomeController < ApplicationController
   			for event in entry["messaging"] do
   				senderID = event["sender"]["id"]
   				messageText = event["message"]["text"]
-  				responseText = "Sorry I don't understand that yet. Try one of these phrases: start new list, show me the list, or add * to the list"
+  				responseText = "Sorry I don't understand that yet. Try one of these phrases: start new list, show me the list, or add *"
   				messageText = messageText.downcase
 
   				if messageText.start_with?("add")
-  					responseText = "Ok! I added that to the list."
+  					item = messageText[4..-1]
+  					responseText = "Ok! I added " + item + " to the list."
   				elsif messageText == "hi" or messageText == "hello" or messageText == "hey"
   					responseText = "Hi there!"
   				elsif messageText == "start new list"
