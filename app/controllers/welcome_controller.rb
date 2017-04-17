@@ -19,7 +19,20 @@ class WelcomeController < ApplicationController
   			for event in entry["messaging"] do
   				senderID = event["sender"]["id"]
   				messageText = event["message"]["text"]
-  				send_message(senderID, messageText)
+  				responseText = messageText
+
+  				case messageText
+  					when "Hi"
+  						responseText = "Hi there!"
+  					when "Start new list"
+  						responseText = "Ok! Starting a new list!"
+  					when "Show me the list"
+  						responseText = "This is the list so far:"
+  					when messageText.start_with?('Add')
+  						responseText = "Ok! I added that to the list."
+  				end
+
+  				send_message(senderID, responseText)
   			end
   		end
   	end
