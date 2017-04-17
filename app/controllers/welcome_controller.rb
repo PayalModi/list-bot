@@ -12,7 +12,7 @@ class WelcomeController < ApplicationController
 	  			for event in entry["messaging"] do
 	  				senderID = event["sender"]["id"]
 	  				messageText = event["message"]["text"]
-	  				send_message(senderId, messageText)
+	  				send_message(senderID, messageText)
 	  			end
 	  		end
 	  	end
