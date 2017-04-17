@@ -7,17 +7,21 @@ class WelcomeController < ApplicationController
   	if request.post?
   		information = request.raw_post
 		data_parsed = JSON.parse(information)
-	  	if data_parsed["object"] == 'page'
-	  		for entry in data_parsed["entry"] do
-	  			for event in entry["messaging"] do
-	  				senderID = event["sender"]["id"]
-	  				messageText = event["message"]["text"]
-	  				send_message(senderID, messageText)
-	  			end
-	  		end
-	  	end
+		respond_to_message(data_parsed)
   	else
   		verify_webhook(params["hub.mode"], params["hub.verify_token"], params["hub.challenge"])
+  	end
+  end
+
+  def respond_to_message (data_parsed)
+  	if data_parsed["object"] == 'page'
+  		for entry in data_parsed["entry"] do
+  			for event in entry["messaging"] do
+  				senderID = event["sender"]["id"]
+  				messageText = event["message"]["text"]
+  				send_message(senderID, messageText)
+  			end
+  		end
   	end
   end
 
