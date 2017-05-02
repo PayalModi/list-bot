@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170502042604) do
+ActiveRecord::Schema.define(version: 20170502180525) do
 
   create_table "list_items", force: :cascade do |t|
     t.string   "itemname"
     t.datetime "created_at", null: false
-    t.integer  "userid"
+    t.string   "userid"
     t.datetime "updated_at", null: false
   end
 

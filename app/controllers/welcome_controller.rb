@@ -24,7 +24,7 @@ class WelcomeController < ApplicationController
 
   				if messageText.start_with?("add")
   					item = messageText[4..-1]
-            ListItem.create(:itemname => item, :created_at => DateTime.now, :userid => senderID.to_i)
+            ListItem.create(:itemname => item, :created_at => DateTime.now, :userid => senderID)
   					responseText = "Ok! I added " + item + " to the list."
   				elsif messageText == "hi" or messageText == "hello" or messageText == "hey"
   					responseText = "Hi there!"
