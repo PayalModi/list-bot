@@ -34,7 +34,7 @@ class WelcomeController < ApplicationController
   					responseText = "This is the list so far: "
             items = ListItem.where(userid: senderID)
             for item in items do
-              responseText = responseText + item[itemname] + ", "
+              responseText = responseText + item[:itemname] + ", "
               puts responseText
             end
   				end
