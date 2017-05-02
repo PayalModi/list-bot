@@ -6,8 +6,8 @@ class WelcomeController < ApplicationController
   def homepage
   	if request.post?
   		information = request.raw_post
-		data_parsed = JSON.parse(information)
-		respond_to_message(data_parsed)
+		  data_parsed = JSON.parse(information)
+		  respond_to_message(data_parsed)
   	else
   		verify_webhook(params["hub.mode"], params["hub.verify_token"], params["hub.challenge"])
   	end
@@ -41,13 +41,13 @@ class WelcomeController < ApplicationController
 
   def send_message (senderID, messageText)
   	uri = URI.parse("https://graph.facebook.com/v2.6/me/messages?access_token="+ENV["PAGE_ACCESS_TOKEN"])
-	response = {:recipient => {:id => senderID}, :message => {:text => messageText}}
+  	response = {:recipient => {:id => senderID}, :message => {:text => messageText}}
 
-	http = Net::HTTP.new(uri.host, uri.port)
-	http.use_ssl = true
-	request = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
-	request.body = response.to_json
-	http.request(request)
+  	http = Net::HTTP.new(uri.host, uri.port)
+  	http.use_ssl = true
+  	request = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
+  	request.body = response.to_json
+  	http.request(request)
   end
 
   def verify_webhook (mode, token, challenge)
