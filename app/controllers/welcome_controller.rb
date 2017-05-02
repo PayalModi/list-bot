@@ -33,10 +33,10 @@ class WelcomeController < ApplicationController
   				elsif messageText == "show me the list"
   					responseText = "This is the list so far: "
             items = ListItem.where(userid: senderID)
-            puts items
-            items.join(", ")
-            puts items
-            responseText = responseText + items
+            for item in items do
+              responseText = responseText + item.pluck(:itemname) + ", "
+              puts responseText
+            end
   				end
 
   				send_message(senderID, responseText)
