@@ -17,53 +17,63 @@ class WelcomeController < ApplicationController
   	if data_parsed["object"] == 'page'
   		for entry in data_parsed["entry"] do
   			for event in entry["messaging"] do
-  				senderID = event["sender"]["id"]
-  				messageText = event["message"]["text"]
-  				responseText = "Sorry I don't understand that yet. Try one of these phrases: start new list, show me the list, or add *"
-  				messageText = messageText.downcase
+          senderID = event["sender"]["id"]
+          if event["message"]
+    				messageText = event["message"]["text"]
+    				responseText = "Sorry I don't understand that yet. Try one of these phrases: start new list, show me the list, or add *"
+    				messageText = messageText.downcase
 
-  				if messageText.start_with?("add")
-  					item = messageText[4..-1]
-            ListItem.create(:itemname => item, :created_at => DateTime.now, :userid => senderID)
-  					responseText = "Ok! I added " + item + " to the list."
-  				elsif messageText == "hi" or messageText == "hello" or messageText == "hey"
-  					responseText = "Hi there!"
-  				elsif messageText == "start new list"
-  					responseText = "Ok! Starting a new list!"
-            items = ListItem.where(userid: senderID)
-            for item in items do
-              item.destroy
-            end
-  				elsif messageText == "show me the list"
-  					responseText = "This is the list so far:"
-            items = ListItem.where(userid: senderID)
-            for item in items do
-              responseText = responseText + "\n" + item[:itemname]
-            end
-  				end
+    				if messageText.start_with?("add")
+    					item = messageText[4..-1]
+              ListItem.create(:itemname => item, :created_at => DateTime.now, :userid => senderID)
+    					responseText = "Ok! I added " + item + " to the list."
+              send_text_message(senderID, responseText)
 
-  				# send_text_message(senderID, responseText)
-          send_button_message(senderID)
+    				elsif messageText == "hi" or messageText == "hello" or messageText == "hey"
+    					responseText = "Hi there!"
+              send_text_message(senderID, responseText)
+
+    				elsif messageText == "start new list"
+    					responseText = "Ok! Starting a new list!"
+              items = ListItem.where(userid: senderID)
+              for item in items do
+                item.destroy
+              end
+              send_text_message(senderID, responseText)
+
+    				elsif messageText == "show me the list"
+    					# responseText = "This is the list so far:"
+              # items = ListItem.where(userid: senderID)
+              # for item in items do
+                # responseText = responseText + "\n" + item[:itemname]
+              # end
+              send_button_message(senderID)
+
+            else
+              send_text_message(senderID, responseText)
+    				end
+          elsif event["postback"]
+            payload = event["postback"]["payload"]
+            puts "Got postback " + payload
+            send_text_message(senderID, "Deleting soda")
+          end
   			end
   		end
   	end
   end
 
   def send_text_message (senderID, messageText)
-  	uri = URI.parse("https://graph.facebook.com/v2.6/me/messages?access_token="+ENV["PAGE_ACCESS_TOKEN"])
   	response = {:recipient => {:id => senderID}, :message => {:text => messageText}}
-
-  	http = Net::HTTP.new(uri.host, uri.port)
-  	http.use_ssl = true
-  	request = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
-  	request.body = response.to_json
-  	http.request(request)
+    send_message(response)
   end
 
   def send_button_message (senderID)
-    uri = URI.parse("https://graph.facebook.com/v2.6/me/messages?access_token="+ENV["PAGE_ACCESS_TOKEN"])
     response = {:recipient => {:id => senderID}, :message => {:attachment => {:type => "template", :payload => {:template_type => "generic", :elements => [{:title => "soda", :buttons => [{:type => "postback", :title => "Delete Item", :payload => "delete item 1"}]}]}}}}
+    send_message (response)
+  end
 
+  def send_message (response)
+    uri = URI.parse("https://graph.facebook.com/v2.6/me/messages?access_token="+ENV["PAGE_ACCESS_TOKEN"])
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     request = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
