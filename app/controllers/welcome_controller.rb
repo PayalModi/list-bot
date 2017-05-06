@@ -52,6 +52,7 @@ class WelcomeController < ApplicationController
               for item in items do
                 responseText = responseText + "\n" + item[:itemname]
               end
+              send_text_message(senderID, responseText)
 
             elsif messageText == "delete an item"
               send_quick_reply(senderID)
