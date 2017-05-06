@@ -49,6 +49,10 @@ class WelcomeController < ApplicationController
               # end
               send_button_message(senderID)
 
+            elsif messageText == "delete an item"
+              send_quick_reply(senderID)
+            end
+
             else
               send_text_message(senderID, responseText)
     				end
@@ -70,6 +74,11 @@ class WelcomeController < ApplicationController
   def send_button_message (senderID)
     response = {:recipient => {:id => senderID}, :message => {:attachment => {:type => "template", :payload => {:template_type => "generic", :elements => [{:title => "soda", :buttons => [{:type => "postback", :title => "Delete Item", :payload => "delete item 1"}]}]}}}}
     send_message (response)
+  end
+
+  def send_quick_reply (senderID)
+    response = {:recipient => {:id => senderID}, :message => {:text => "Pick an item to delete", :quick_replies => [{:content_type => "text", :title => "Soda", :payload => "Chose soda"}, {:content_type => "text", :title => "Potatoes", :payload => "Chose potatoes"}]}}
+    send_message(response)
   end
 
   def send_message (response)
