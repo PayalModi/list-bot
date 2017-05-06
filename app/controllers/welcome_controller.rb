@@ -48,6 +48,7 @@ class WelcomeController < ApplicationController
                 # responseText = responseText + "\n" + item[:itemname]
               # end
               send_button_message(senderID)
+            end
 
             elsif messageText == "delete an item"
               send_quick_reply(senderID)
