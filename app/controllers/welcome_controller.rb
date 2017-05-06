@@ -23,7 +23,12 @@ class WelcomeController < ApplicationController
     				responseText = "Sorry I don't understand that yet. Try one of these phrases: start new list, show me the list, or add *"
     				messageText = messageText.downcase
 
-    				if messageText.start_with?("add")
+            if event["message"]["quick_reply"]
+              puts "Quick reply option clicked"
+              responseText = "Ok. Deleting that item"
+              send_text_message(senderID, responseText)
+
+    				elsif messageText.start_with?("add")
     					item = messageText[4..-1]
               ListItem.create(:itemname => item, :created_at => DateTime.now, :userid => senderID)
     					responseText = "Ok! I added " + item + " to the list."
@@ -42,12 +47,11 @@ class WelcomeController < ApplicationController
               send_text_message(senderID, responseText)
 
     				elsif messageText == "show me the list"
-    					# responseText = "This is the list so far:"
-              # items = ListItem.where(userid: senderID)
-              # for item in items do
-                # responseText = responseText + "\n" + item[:itemname]
-              # end
-              send_button_message(senderID)
+    					responseText = "This is the list so far:"
+              items = ListItem.where(userid: senderID)
+              for item in items do
+                responseText = responseText + "\n" + item[:itemname]
+              end
 
             elsif messageText == "delete an item"
               send_quick_reply(senderID)
