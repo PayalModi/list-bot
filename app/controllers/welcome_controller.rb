@@ -42,13 +42,14 @@ class WelcomeController < ApplicationController
             end
   				end
 
-  				send_message(senderID, responseText)
+  				# send_text_message(senderID, responseText)
+          send_button_message(senderID)
   			end
   		end
   	end
   end
 
-  def send_message (senderID, messageText)
+  def send_text_message (senderID, messageText)
   	uri = URI.parse("https://graph.facebook.com/v2.6/me/messages?access_token="+ENV["PAGE_ACCESS_TOKEN"])
   	response = {:recipient => {:id => senderID}, :message => {:text => messageText}}
 
@@ -59,11 +60,22 @@ class WelcomeController < ApplicationController
   	http.request(request)
   end
 
+  def send_button_message (senderID)
+    uri = URI.parse("https://graph.facebook.com/v2.6/me/messages?access_token="+ENV["PAGE_ACCESS_TOKEN"])
+    response = {:recipient => {:id => senderID}, :message => {:attachment => {:type => "template", payload => {:template_type => "generic", :elements => [{:title => "soda", :buttons => [{:type => "postback", :title => "Delete Item", :payload => "delete item 1"}]}]}}}}
+
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    request = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
+    request.body = response.to_json
+    http.request(request)
+  end
+
   def verify_webhook (mode, token, challenge)
   	if (mode == 'subscribe' and token == ENV["VERIFY_TOKEN"] and challenge)
   		render plain: challenge, status: 200
   	else
   		head 200
-	end
+	 end
   end
 end
