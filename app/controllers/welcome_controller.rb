@@ -62,7 +62,7 @@ class WelcomeController < ApplicationController
 
   def send_button_message (senderID)
     uri = URI.parse("https://graph.facebook.com/v2.6/me/messages?access_token="+ENV["PAGE_ACCESS_TOKEN"])
-    response = {:recipient => {:id => senderID}, :message => {:attachment => {:type => "template", payload => {:template_type => "generic", :elements => [{:title => "soda", :buttons => [{:type => "postback", :title => "Delete Item", :payload => "delete item 1"}]}]}}}}
+    response = {:recipient => {:id => senderID}, :message => {:attachment => {:type => "template", :payload => {:template_type => "generic", :elements => [{:title => "soda", :buttons => [{:type => "postback", :title => "Delete Item", :payload => "delete item 1"}]}]}}}}
 
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
