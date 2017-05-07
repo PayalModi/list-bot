@@ -75,19 +75,17 @@ class WelcomeController < ApplicationController
   end
 
   def send_delete_quick_reply (senderID)
-    response = {:recipient => {:id => senderID}, 
-                :message => {:text => "Pick an item to delete", :quick_replies => get_item_buttons(senderID)}}
-    send_message(response)
-  end
-
-  def get_item_buttons (senderID)
     count = 0
     items = ListItem.where(userid: senderID)
     buttons = Array.new(items.length)
     for item in items do
-      arr[count] = {:content_type => "text", :title => item, :payload => "delete item"}
+      buttons[count] = {:content_type => "text", :title => item, :payload => "delete item"}
       count += 1
     end
+
+    response = {:recipient => {:id => senderID}, 
+                :message => {:text => "Pick an item to delete", :quick_replies => buttons}}
+    send_message(response)
   end
 
   def send_message (response)
