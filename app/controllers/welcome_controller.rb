@@ -85,10 +85,10 @@ class WelcomeController < ApplicationController
       count += 1
     end
 
-    puts "finished for loop 88"
+    puts "finished for loop 88" + buttons
     response = {:recipient => {:id => senderID}, 
                 :message => {:text => "Pick an item to delete", :quick_replies => buttons}}
-    puts "sending message 91"
+    puts "sending message 91" + response
     send_message(response)
   end
 
