@@ -28,6 +28,7 @@ class WelcomeController < ApplicationController
                   item.destroy
                 end
                 send_text_message(senderID, "Ok! Starting a new list!")
+                send_initial_quick_reply(senderID)
               elsif messageText == "show me the list"
                 responseText = "This is the list so far:"
                 items = ListItem.where(userid: senderID)
@@ -35,10 +36,12 @@ class WelcomeController < ApplicationController
                   responseText = responseText + "\n" + item[:itemname]
                 end
                 send_text_message(senderID, responseText)
+                send_initial_quick_reply(senderID)
               elsif messageText == "delete an item"
                 send_delete_quick_reply(senderID)
               else
                 send_text_message(senderID, "Ok. Deleting that item.")
+                send_initial_quick_reply(senderID)
               end
 
             elsif messageText.start_with?("add")
@@ -46,6 +49,7 @@ class WelcomeController < ApplicationController
               ListItem.create(:itemname => item, :created_at => DateTime.now, :userid => senderID)
               responseText = "Ok! I added " + item + " to the list."
               send_text_message(senderID, responseText)
+              send_initial_quick_reply(senderID)
 
             else
               send_initial_quick_reply(senderID)
