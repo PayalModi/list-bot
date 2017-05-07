@@ -20,16 +20,15 @@ class WelcomeController < ApplicationController
           senderID = event["sender"]["id"]
           if event["message"]
             messageText = event["message"]["text"]
-            messageText = messageText.downcase
             if event["message"]["quick_reply"]
-              if messageText == "start new list"
+              if messageText.downcase == "start new list"
                 items = ListItem.where(userid: senderID)
                 for item in items do
                   item.destroy
                 end
                 send_text_message(senderID, "Ok! Starting a new list!")
                 send_initial_quick_reply(senderID)
-              elsif messageText == "show me the list"
+              elsif messageText.downcase == "show me the list"
                 responseText = "This is the list so far:"
                 items = ListItem.where(userid: senderID)
                 for item in items do
@@ -37,14 +36,21 @@ class WelcomeController < ApplicationController
                 end
                 send_text_message(senderID, responseText)
                 send_initial_quick_reply(senderID)
-              elsif messageText == "delete an item"
+              elsif messageText.downcase == "delete an item"
                 send_delete_quick_reply(senderID)
               else
-                send_text_message(senderID, "Ok. Deleting that item.")
+                items = ListItem.where(userid: senderID)
+                for item in items do
+                  if messageText == item[:itemname]
+                    item.destroy
+                    break
+                  end
+                end
+                send_text_message(senderID, "Ok. Removed that item from the list.")
                 send_initial_quick_reply(senderID)
               end
 
-            elsif messageText.start_with?("add")
+            elsif messageText.downcase.start_with?("add")
               item = messageText[4..-1]
               ListItem.create(:itemname => item, :created_at => DateTime.now, :userid => senderID)
               responseText = "Ok! I added " + item + " to the list."
@@ -75,22 +81,16 @@ class WelcomeController < ApplicationController
   end
 
   def send_delete_quick_reply (senderID)
-    puts "doing the quick reply for delete"
     count = 0
     items = ListItem.where(userid: senderID)
-    puts "starting for loop"
     buttons = Array.new(items.length)
     for item in items do
       buttons[count] = {:content_type => "text", :title => item[:itemname], :payload => "delete item"}
       count += 1
     end
 
-    puts "finished for loop 88"
-    puts buttons
     response = {:recipient => {:id => senderID}, 
                 :message => {:text => "Pick an item to delete", :quick_replies => buttons}}
-    puts "sending message 91"
-    puts response
     send_message(response)
   end
 
