@@ -65,20 +65,29 @@ class WelcomeController < ApplicationController
     send_message(response)
   end
 
-  def send_button_message (senderID)
-    response = {:recipient => {:id => senderID}, :message => {:attachment => {:type => "template", :payload => {:template_type => "generic", :elements => [{:title => "soda", :buttons => [{:type => "postback", :title => "Delete Item", :payload => "delete item 1"}]}]}}}}
-    send_message (response)
-  end
-
   def send_initial_quick_reply(senderID)
-    response = {:recipient => {:id => senderID}, :message => {:text => "Pick one of these options, or type add * to add something to the list.", :quick_replies => [{:content_type => "text", :title => "Start new list", :payload => "new list"}, {:content_type => "text", :title => "Show me the list", :payload => "show list"}, {:content_type => "text", :title => "Delete an item", :payload => "delete item"}
-]}}
+    response = {:recipient => {:id => senderID}, 
+                :message => {:text => "Pick one of these options, or type add * to add something to the list.", :quick_replies =>
+                  [{:content_type => "text", :title => "Start new list", :payload => "new list"}, 
+                   {:content_type => "text", :title => "Show me the list", :payload => "show list"}, 
+                   {:content_type => "text", :title => "Delete an item", :payload => "delete item"}]}}
     send_message(response)
   end
 
   def send_delete_quick_reply (senderID)
-    response = {:recipient => {:id => senderID}, :message => {:text => "Pick an item to delete", :quick_replies => [{:content_type => "text", :title => "Soda", :payload => "Chose soda"}, {:content_type => "text", :title => "Potatoes", :payload => "Chose potatoes"}]}}
+    response = {:recipient => {:id => senderID}, 
+                :message => {:text => "Pick an item to delete", :quick_replies => get_item_buttons(senderID)}}
     send_message(response)
+  end
+
+  def get_item_buttons (senderID)
+    count = 0
+    items = ListItem.where(userid: senderID)
+    buttons = Array.new(items.length)
+    for item in items do
+      arr[count] = {:content_type => "text", :title => item, :payload => "delete item"}
+      count += 1
+    end
   end
 
   def send_message (response)
