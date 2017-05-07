@@ -81,7 +81,7 @@ class WelcomeController < ApplicationController
     puts "starting for loop"
     buttons = Array.new(items.length)
     for item in items do
-      buttons[count] = {:content_type => "text", :title => item, :payload => "delete item"}
+      buttons[count] = {:content_type => "text", :title => item[:itemname], :payload => "delete item"}
       count += 1
     end
 
