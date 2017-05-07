@@ -21,14 +21,14 @@ class WelcomeController < ApplicationController
           if event["message"]
             messageText = event["message"]["text"]
             if event["message"]["quick_reply"]
-              if messageText.downcase == "start new list"
+              if messageText == "Start new list"
                 items = ListItem.where(userid: senderID)
                 for item in items do
                   item.destroy
                 end
                 send_text_message(senderID, "Ok! Starting a new list!")
                 send_initial_quick_reply(senderID)
-              elsif messageText.downcase == "show me the list"
+              elsif messageText == "Show me the list"
                 responseText = "This is the list so far:"
                 items = ListItem.where(userid: senderID)
                 for item in items do
@@ -36,9 +36,11 @@ class WelcomeController < ApplicationController
                 end
                 send_text_message(senderID, responseText)
                 send_initial_quick_reply(senderID)
-              elsif messageText.downcase == "delete an item"
+              elsif messageText == "Delete an item"
                 send_delete_quick_reply(senderID)
-              else
+              elsif messageText == "Add an item"
+                send_text_message(senderID, "Please type 'add' followed by the item you'd like to add.")
+              elsif event["message"]["quick_reply"]["payload"] == 'delete this item'
                 items = ListItem.where(userid: senderID)
                 for item in items do
                   if messageText == item[:itemname]
@@ -76,7 +78,8 @@ class WelcomeController < ApplicationController
                 :message => {:text => "Pick one of these options, or type add * to add something to the list.", :quick_replies =>
                   [{:content_type => "text", :title => "Start new list", :payload => "new list"}, 
                    {:content_type => "text", :title => "Show me the list", :payload => "show list"}, 
-                   {:content_type => "text", :title => "Delete an item", :payload => "delete item"}]}}
+                   {:content_type => "text", :title => "Delete an item", :payload => "delete item"},
+                   {:content_type => "text", :title => "Add an item", :payload => "add item"}]}}
     send_message(response)
   end
 
@@ -85,7 +88,7 @@ class WelcomeController < ApplicationController
     items = ListItem.where(userid: senderID)
     buttons = Array.new(items.length)
     for item in items do
-      buttons[count] = {:content_type => "text", :title => item[:itemname], :payload => "delete item"}
+      buttons[count] = {:content_type => "text", :title => item[:itemname], :payload => "delete this item"}
       count += 1
     end
 
